@@ -29,6 +29,7 @@ p56_sce <- read10xCounts("C:/Users/ihowa/Dropbox/justine/P56", type="sparse")
 ```
 
 <details><summary> P0 QC </summary>
+  
 ```
 # create a table of statistics using emptyDropsCellRanger
 droplet_df <- DropletUtils::emptyDropsCellRanger(counts(p0_sce))
