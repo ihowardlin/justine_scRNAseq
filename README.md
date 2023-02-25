@@ -28,7 +28,7 @@ p5_sce <- read10xCounts("C:/Users/ihowa/Dropbox/justine/P5", type="sparse")
 p56_sce <- read10xCounts("C:/Users/ihowa/Dropbox/justine/P56", type="sparse")
 ```
 
-<detail> P0 QC
+<details><summary> P0 QC </summary>
 ```
 # create a table of statistics using emptyDropsCellRanger
 droplet_df <- DropletUtils::emptyDropsCellRanger(counts(p0_sce))
@@ -43,7 +43,7 @@ filtered_sce <- p0_sce[, cells_to_retain]
 filtered_sce
 
 ```
-</detail>
+</details>
   
 ```
 # read in a table of mitochondrial genes and extract ids
