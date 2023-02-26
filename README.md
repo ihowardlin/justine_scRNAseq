@@ -318,3 +318,5 @@ names(sce_list) <- sample_names
 purrr::map(sce_list,
            \(x) colnames(rowData(x)))                 
 ```  
+![umap_merged](https://user-images.githubusercontent.com/56315895/221396715-43b1d1a6-6531-49aa-801a-e3c5c06dee99.jpeg)
+![umap_after_integration](https://user-images.githubusercontent.com/56315895/221396717-f96e0d20-be94-4406-ad93-81a441dd165a.jpeg)
