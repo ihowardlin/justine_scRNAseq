@@ -302,9 +302,9 @@ sample_names <- c("p0",
                   "p5",
                   "p6")
                        
-sce_paths <- c("p0_output_sce_file",
-                  "p5_output_sce_file",
-                  "p56_output_sce_file")
+sce_paths <- c("p0_output_sce_file.rds",
+                  "p5_output_sce_file.rds",
+                  "p56_output_sce_file.rds")
 
 # Use purrr::map() to read all files into a list at once
 sce_list <- purrr::map(
