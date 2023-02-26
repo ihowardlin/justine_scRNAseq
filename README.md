@@ -75,12 +75,42 @@ qcfiltered_sce <- miQC::filterCells(filtered_sce,
                                     model = miqc_model)
                   
 # filter cells by unique gene count (`detected`)
-qcfiltered_sce <- qcfiltered_sce[, which(qcfiltered_sce$detected >= 200)]                  
+qcfiltered_sce <- qcfiltered_sce[, which(qcfiltered_sce$detected >= 200)]   
+  
+# perform normalization using scaling factors
+# and save as a new SCE object
+normalized_sce <- scuttle::logNormCounts(qcfiltered_sce)
+# identify 2000 genes 
+num_genes <- 2000
+ 
+# model variance, partitioning into biological and technical variation
+gene_variance <- scran::modelGeneVar(normalized_sce)
+ 
+# get the most variable genes
+hv_genes <- scran::getTopHVGs(gene_variance,
+                               n = num_genes)
+# calculate and save PCA results
+normalized_sce <- scater::runPCA(
+     normalized_sce,
+     ncomponents = 50, # how many components to keep
+     subset_row = hv_genes # use only the variable genes we chose)
+
+normalized_sce
+
+# extract the PCA matrix
+pca_matrix <- reducedDim(normalized_sce, "PCA")
+ 
+# look at the shape of the matrix
+dim(pca_matrix)
+
+p0_normalized_sce <- normalized_sce
+colnames(p0_normalized_sce) <- colData(p0_normalized_sce)$Barcode
+readr::write_rds(p0_normalized_sce, file = "p0_output_sce_file.rds", compress = "gz")  
+  
 ```
   
 ![mitochondrial](https://user-images.githubusercontent.com/56315895/221388029-14fc8b01-ed9a-4cc9-8f41-f8db53bb4b35.jpeg)
 ![compromised](https://user-images.githubusercontent.com/56315895/221388032-fd3a81f7-92c7-4d94-9987-34564051b2f3.jpeg)
-![kept](https://user-images.githubusercontent.com/56315895/221388035-7084d5c7-f1b8-413e-97df-c2f6898c653f.jpeg)
 ![kept](https://user-images.githubusercontent.com/56315895/221388035-7084d5c7-f1b8-413e-97df-c2f6898c653f.jpeg)
 
 </details>  
