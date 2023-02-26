@@ -196,5 +196,7 @@ colnames(p5_normalized_sce) <- colData(p5_normalized_sce)$Barcode
 readr::write_rds(p5_normalized_sce, file = "p5_output_sce_file.rds", compress = "gz")  
   
 ```
+
+![mitochondrial](https://user-images.githubusercontent.com/56315895/221389459-1353ae72-a7c6-4454-9bd8-c93eeb95c996.jpeg)
  
 </details>  
