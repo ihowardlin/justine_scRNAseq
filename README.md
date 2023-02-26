@@ -51,6 +51,31 @@ mito_genes <- readr::read_tsv("hs_mitochondrial_genes.tsv") |>
      # create a vector from the gene_id column
      dplyr::pull(symbol)
 
+filtered_sce <- scuttle::addPerCellQC(filtered_sce,
+                                      subsets = list(mito = mito_genes))
+head(colData(filtered_sce))
+
+# use miQC::plotMetrics()
+miQC::plotMetrics(filtered_sce) + theme_bw()
+
+# fit the miQC model
+miqc_model <- miQC::mixtureModel(filtered_sce) 
+
+# plot the miQC model
+miQC::plotModel(filtered_sce, miqc_model) + 
+  theme_bw()
+  
+# look at miQC filtering
+miQC::plotFiltering(filtered_sce, miqc_model, 
+                    posterior_cutoff = 0.75) + 
+  theme_bw()
+
+# perform miQC filtering
+qcfiltered_sce <- miQC::filterCells(filtered_sce, 
+                                    model = miqc_model)
+                  
+# filter cells by unique gene count (`detected`)
+qcfiltered_sce <- qcfiltered_sce[, which(qcfiltered_sce$detected >= 200)]                  
 ```
 </details>
   
