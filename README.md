@@ -198,8 +198,8 @@ readr::write_rds(p5_normalized_sce, file = "p5_output_sce_file.rds", compress = 
 ```
 
 ![mitochondrial](https://user-images.githubusercontent.com/56315895/221389459-1353ae72-a7c6-4454-9bd8-c93eeb95c996.jpeg)
-![compromised](https://user-images.githubusercontent.com/56315895/221389787-27968071-09ce-45df-950c-3d289f533c1b.jpeg)
-![kept](https://user-images.githubusercontent.com/56315895/221389790-e9d5e7be-ab22-41b7-a3c2-135e6c91760c.jpeg)
+![compromised](https://user-images.githubusercontent.com/56315895/221389840-b2a651a1-6e70-4948-8339-3e74ac98ef19.jpeg)
+![kept](https://user-images.githubusercontent.com/56315895/221389841-d0c09463-3c3a-4eeb-9ca5-83110af3e441.jpeg)
 
 </details>  
   
