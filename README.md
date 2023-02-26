@@ -179,7 +179,7 @@ hv_genes <- scran::getTopHVGs(gene_variance,
 normalized_sce <- scater::runPCA(
      normalized_sce,
      ncomponents = 50, # how many components to keep
-     subset_row = hv_genes # use only the variable genes we chose)
+     subset_row = hv_genes # use only the variable genes we chose
 
 normalized_sce
 
