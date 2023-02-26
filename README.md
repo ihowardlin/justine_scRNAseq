@@ -10,6 +10,7 @@ library(celldex)
 library(ensembldb)
 library(pheatmap)
 library(forcats)
+library(miQC)
 
 # Plotting functions
 library(ggplot2) 
