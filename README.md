@@ -284,5 +284,8 @@ colnames(p56_normalized_sce) <- colData(p56_normalized_sce)$Barcode
 readr::write_rds(p56_normalized_sce, file = "p56_output_sce_file.rds", compress = "gz")  
   
 ```
+![mitochondrial](https://user-images.githubusercontent.com/56315895/221391134-e8b120bf-f573-4f20-a34e-7eb7d5863a92.jpeg)
+![compromised](https://user-images.githubusercontent.com/56315895/221391135-0eca2aaf-37b5-40cd-b4df-90cb20d133eb.jpeg)
+![kept](https://user-images.githubusercontent.com/56315895/221391136-4a5c6e5d-d017-4f4a-90c2-f90c600b737f.jpeg)
 
 </details>    
