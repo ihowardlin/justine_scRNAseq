@@ -316,7 +316,139 @@ names(sce_list) <- sample_names
 
 # Use `purrr::map()` to quickly extract rowData column names for all SCEs
 purrr::map(sce_list,
-           \(x) colnames(rowData(x)))                 
+           \(x) colnames(rowData(x))) 
+  
+# Define vector of shared genes
+shared_genes <- sce_list |>
+# get rownames (genes) for each SCE in sce_list
+purrr::map(rownames) |>
+# reduce to the _intersection_ among lists
+purrr::reduce(intersect)    
+
+purrr::map(sce_list,
+           \(x) colnames(colData(x)) )
+ 
+format_sce <- function(sce, sample_name) {
+  # Input arguments:
+  ## sce: An SCE object to format
+  ## sample_name: The SCE objects name
+  # This function returns a formatted SCE object.
+  
+  ###### Ensure that we can identify the originating sample information ######
+  # Add a column called `sample` that stores this information
+  # This will be stored in `colData`
+  sce$Sample <- sample_name
+  
+  
+  ###### Ensure cell ids will be unique ######
+  # Update the SCE object column names (cell ids) by prepending `sample_name`
+  colnames(sce) <- glue::glue("{sample_name}-{colnames(sce)}")
+        
+  # Return the formatted SCE object
+  return(sce)
+}
+   
+# We can use `purrr::map2()` to loop over two list/vector arguments
+sce_list_formatted <- purrr::map2(
+  # Each "iteration" will march down the first two 
+  #  arguments `sce_list` and `names(sce_list)` in order
+  sce_list,
+  names(sce_list),
+  # Name of the function to run
+  format_sce
+)
+
+sce_list_formatted <- sce_list_formatted |> purrr::map(\(sce) sce[shared_genes, ])	
+	
+# Print resulting list
+sce_list_formatted
+  
+# Merge SCE objects 
+merged_sce <- do.call(cbind, sce_list_formatted)
+
+# Print the merged_sce object
+merged_sce  
+  
+# UMAPs scaled together when calculated from the merged SCE
+scater::plotReducedDim(merged_sce, dimred = "merged_UMAP", colour_by = "Samples",
+    # Some styling to help us see the points:
+    point_size = 0.5, point_alpha = 0.2) +
+    # Modify the legend key so its points are larger and easier to see
+    guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
+    # Add a plot title
+    ggtitle("UMAP calculated on merged_sce")
+
+# Specify the number of genes to identify
+num_genes <- 2000
+
+# Calculate variation for each gene
+gene_variance <- scran::modelGeneVar(merged_sce,
+                                     # specify the grouping column:
+                                     block = merged_sce$Sample)
+
+# Get the top `num_genes` high-variance genes to use for dimension reduction
+hv_genes <- scran::getTopHVGs(gene_variance,
+                              n = num_genes)
+
+# Use batchelor to calculate PCA for merged_sce, considering only
+#  the high-variance genes
+# We will need to include the argument `preserve.single = TRUE` to get
+#  a single matrix with all samples and not separate matries for each sample
+merged_pca <- batchelor::multiBatchPCA(merged_sce,
+                                       subset.row = hv_genes,
+                                       batch = merged_sce$Sample,
+                                       preserve.single = TRUE)
+              
+# add PCA results to merged SCE object 
+reducedDim(merged_sce, "merged_PCA") <- merged_pca[[1]]
+
+# add merged_UMAP from merged_PCA
+merged_sce <- scater::runUMAP(merged_sce,
+                              dimred = "merged_PCA",
+                              name = "merged_UMAP")
+              
+# UMAPs scaled together when calculated from the merged SCE
+scater::plotReducedDim(merged_sce,
+                       dimred = "merged_UMAP",
+                       colour_by = "Sample",
+                       # Some styling to help us see the points:
+                       point_size = 0.5,
+                       point_alpha = 0.2) +
+  # Modify the legend key so its points are larger and easier to see
+  guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
+  # Add a plot title
+  ggtitle("UMAP calculated on merged_sce")
+ 
+# integrate with fastMNN, again specifying only our high-variance genes
+integrated_sce <- batchelor::fastMNN(
+     merged_sce,
+     batch = merged_sce$Sample, 
+     subset.row = hv_genes
+ ) 
+              
+# Make a new reducedDim named fastmnn_PCA from the corrected reducedDim in integrated_sce
+reducedDim(merged_sce, "fastmnn_PCA") <- reducedDim(integrated_sce, "corrected")
+
+# Calculate UMAP
+merged_sce <- scater::runUMAP(
+  merged_sce, 
+  dimred = "fastmnn_PCA", 
+  name = "fastmnn_UMAP"
+)
+
+scater::plotReducedDim(merged_sce,
+                        # plot the fastMNN coordinates
+                        dimred = "fastmnn_UMAP",
+                        # color by Sample
+                        colour_by = "Sample",
+                        # Some styling to help us see the points:
+                        point_size = 0.5,
+                        point_alpha = 0.2) +
+     # Modify legend so they key is larger and easier to see
+     guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
+     # add plot title
+     ggtitle("UMAP after integration with fastMNN")                
+  
 ```  
 ![umap_merged](https://user-images.githubusercontent.com/56315895/221396715-43b1d1a6-6531-49aa-801a-e3c5c06dee99.jpeg)
 ![umap_after_integration](https://user-images.githubusercontent.com/56315895/221396717-f96e0d20-be94-4406-ad93-81a441dd165a.jpeg)
