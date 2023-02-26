@@ -368,16 +368,7 @@ merged_sce <- do.call(cbind, sce_list_formatted)
 
 # Print the merged_sce object
 merged_sce  
-  
-# UMAPs scaled together when calculated from the merged SCE
-scater::plotReducedDim(merged_sce, dimred = "merged_UMAP", colour_by = "Samples",
-    # Some styling to help us see the points:
-    point_size = 0.5, point_alpha = 0.2) +
-    # Modify the legend key so its points are larger and easier to see
-    guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
-    # Add a plot title
-    ggtitle("UMAP calculated on merged_sce")
-
+ 
 # Specify the number of genes to identify
 num_genes <- 2000
 
