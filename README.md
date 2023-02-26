@@ -43,14 +43,13 @@ filtered_sce <- p0_sce[, cells_to_retain]
 
 filtered_sce
 
+# read in a table of mitochondrial genes and extract ids
+mito_genes <- readr::read_tsv("hs_mitochondrial_genes.tsv") |>
+     # filter to only the genes that are found in our dataset
+     dplyr::filter(symbol %in% rownames(filtered_sce)) |>
+     # create a vector from the gene_id column
+     dplyr::pull(symbol)
+
 ```
 </details>
   
-```
-# read in a table of mitochondrial genes and extract ids
-mito_genes <- readr::read_tsv("hs_mitochondrial_genes.tsv") |>
-  # filter to only the genes that are found in our dataset
-  dplyr::filter(gene_id %in% rownames(filtered_sce)) |>
-  # create a vector from the gene_id column
-  dplyr::pull(gene_id)
-```
