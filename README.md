@@ -1,4 +1,8 @@
-Test
+## Table of Contents
+  * [Setting up required libraries and files](#setting-up-required-libraries-and-files)
+
+
+# Setting up required libraries and files
 
 ```
 # Load libraries
