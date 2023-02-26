@@ -289,3 +289,32 @@ readr::write_rds(p56_normalized_sce, file = "p56_output_sce_file.rds", compress 
 ![kept](https://user-images.githubusercontent.com/56315895/221391136-4a5c6e5d-d017-4f4a-90c2-f90c600b737f.jpeg)
 
 </details>    
+
+```  
+# Define directory to save integrated SCE object to
+output_dir <- file.path("C:/Users/ihowa/Dropbox/justine/")  
+              
+# Define output file name for the integrated object
+integrated_sce_file <- file.path(output_dir, "rms_integrated_subset.rds")
+                       
+# Vector of all the samples to read in:
+sample_names <- c("p0",
+                  "p5",
+                  "p6")
+                       
+sce_paths <- c("p0_output_sce_file",
+                  "p5_output_sce_file",
+                  "p56_output_sce_file")
+
+# Use purrr::map() to read all files into a list at once
+sce_list <- purrr::map(
+  sce_paths, 
+  readr::read_rds)
+            
+# Assign the sample names as the names for sce_list
+names(sce_list) <- sample_names
+
+# Use `purrr::map()` to quickly extract rowData column names for all SCEs
+purrr::map(sce_list,
+           \(x) colnames(rowData(x)))                 
+```  
