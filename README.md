@@ -448,7 +448,29 @@ scater::plotReducedDim(merged_sce,
      guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
      # add plot title
      ggtitle("UMAP after integration with fastMNN")                
-  
+ 
+# integrate with harmony, setting the argument `do_pca = FALSE`
+# since we are providing a PCA matrix directly
+harmony_pca <- harmony::HarmonyMatrix(
+    data_mat = reducedDim(merged_sce, "merged_PCA")[,1:10],
+    do_pca = FALSE,
+    meta_data = colData(merged_sce),
+    vars_use = 'Sample'
+)
+	       
+# As before, calculate UMAP on this PCA matrix with appropriate names
+merged_sce <- scater::runUMAP(merged_sce, 
+                               dimred = "harmony_PCA", 
+                               name   = "harmony_UMAP")
+scater::plotReducedDim(merged_sce,
+                        dimred = "harmony_UMAP",
+                        colour_by = "Sample",
+                        point_size = 0.5,
+                        point_alpha = 0.2) +
+     ggtitle("UMAP after integration with harmony") +
+     guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1)))  
+# Export to RDS file with "gz" compression
+readr::write_rds(merged_sce, integrated_sce_file, compress = "gz")	       
 ```  
 ![umap_merged](https://user-images.githubusercontent.com/56315895/221396715-43b1d1a6-6531-49aa-801a-e3c5c06dee99.jpeg)
 ![umap_after_integration](https://user-images.githubusercontent.com/56315895/221396717-f96e0d20-be94-4406-ad93-81a441dd165a.jpeg)
